@@ -6,25 +6,29 @@
 <meta name="author" content="April Albertine">
 <meta name="description" content="How to use Girih Workbench to design Islamic geometric patterns with compass-and-straightedge steps.">
 <title>Girih Workbench: User’s Guide</title>
+<meta name="theme-color" content="#0f4a48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Reem+Kufi:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root { --bg: #f4f6f8; --panel: #ffffff; --ink: #16212c; --muted: #5a6876; --rule: #d3dae0; --accent: #1c5d8c; --chip: #eef2f5;
-  --display: "Marcellus", "Trajan Pro", Georgia, serif; --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; }
-@media (prefers-color-scheme: dark) { :root { --bg: #0e141b; --panel: #151d26; --ink: #e3e9ef; --muted: #96a3b1; --rule: #26313d; --accent: #6aa8d8; --chip: #1b2530; color-scheme: dark; } }
+:root { --bg: #f3f6f5; --panel: #ffffff; --ink: #14221f; --muted: #556863; --rule: #d1dbd7; --accent: #0f5e5a; --chip: #edf2f0; --brand: #0f4a48; --gold: #e0ac4a;
+  --display: "Reem Kufi", "Figtree", system-ui, sans-serif; --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0a1f1e; --panel: #102b2a; --ink: #e6efec; --muted: #9bb5af; --rule: #214340; --accent: #e0ac4a; --chip: #163634; --brand: #0a3837; color-scheme: dark; } }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); }
 .wrap { max-width: 820px; margin: 0 auto; padding: 28px 18px 64px; }
-header.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 8px; }
-h1 { font: 400 34px/1.15 var(--display); margin: 0; }
-h2 { font: 400 25px/1.2 var(--display); margin: 44px 0 10px; padding-top: 14px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; background: var(--brand); color: #f4efe2; padding: 16px 20px; border-radius: 12px; }
+header.top svg { width: 40px; height: 40px; flex: none; color: var(--gold); }
+header.top h1 { flex: 1 1 260px; }
+h1 { font: 600 30px/1.15 var(--display); margin: 0; }
+h2 { font: 500 24px/1.2 var(--display); margin: 44px 0 10px; padding-top: 14px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
 h3 { font-size: 17px; font-weight: 600; margin: 22px 0 4px; }
 p { margin: 8px 0; }
 a { color: var(--accent); }
 .lede { color: var(--muted); font-size: 18px; margin: 6px 0 18px; }
-.open { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: 500; font-size: 15px; }
-@media (prefers-color-scheme: dark) { .open { color: #0e141b; } }
+.open { display: inline-block; background: var(--gold); color: #0a3837; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; font-size: 15px; }
 nav.toc { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; }
 nav.toc b { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 nav.toc ol { margin: 8px 0 0; padding-left: 22px; columns: 2; column-gap: 28px; }
@@ -49,6 +53,7 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
 <body>
 <div class="wrap">
 <header class="top">
+  <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg>
   <h1>Girih Workbench: User’s Guide</h1>
   <a class="open" href="./">Open the workbench</a>
 </header>

@@ -3,27 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v129">
+<meta name="generator" content="girih-workbench v130">
 <meta name="author" content="April Albertine">
+<meta name="theme-color" content="#0f4a48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
 <meta name="copyright" content="© 2026 April Albertine">
 <meta name="description" content="Design Islamic geometric patterns step by step, by compass and straightedge.">
 <title>Girih Workbench</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: drafting table — tool rail | canvas | instrument panel; on phones the canvas stacks above tools and panel */
 :root {
-  --bg: #e9edf0; --panel: #ffffff; --ink: #16212c; --muted: #5a6876; --rule: #d3dae0;
-  --accent: #1c5d8c; --accent-ink: #ffffff; --chip: #f2f5f7; --warn: #a3501a; --warn-bg: #fbeee4;
-  --display: "Marcellus", "Trajan Pro", Georgia, serif;
+  --bg: #e9eeec; --panel: #ffffff; --ink: #14221f; --muted: #556863; --rule: #d1dbd7;
+  --accent: #0f5e5a; --accent-ink: #ffffff; --chip: #f1f5f3; --warn: #a3501a; --warn-bg: #fbeee4;
+  --brand: #0f4a48; --brand-deep: #0a3837; --brand-ink: #f4efe2; --brand-muted: #b9d1cc; --gold: #e0ac4a;
+  --display: "Reem Kufi", "Figtree", system-ui, sans-serif;
   --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0e141b; --panel: #151d26; --ink: #e3e9ef; --muted: #96a3b1; --rule: #26313d;
-  --accent: #6aa8d8; --accent-ink: #0e141b; --chip: #1b2530; --warn: #f0a46c; --warn-bg: #3a2717; color-scheme: dark } }
+  --bg: #0a1f1e; --panel: #102b2a; --ink: #e6efec; --muted: #9bb5af; --rule: #214340;
+  --accent: #e0ac4a; --accent-ink: #0a2b2a; --chip: #163634; --warn: #f0a46c; --warn-bg: #3a2717; --brand: #0a3837; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #0e141b; --panel: #151d26; --ink: #e3e9ef; --muted: #96a3b1; --rule: #26313d;
-  --accent: #6aa8d8; --accent-ink: #0e141b; --chip: #1b2530; --warn: #f0a46c; --warn-bg: #3a2717; color-scheme: dark }
+  --bg: #0a1f1e; --panel: #102b2a; --ink: #e6efec; --muted: #9bb5af; --rule: #214340;
+  --accent: #e0ac4a; --accent-ink: #0a2b2a; --chip: #163634; --warn: #f0a46c; --warn-bg: #3a2717; --brand: #0a3837; color-scheme: dark }
 
 [hidden] { display: none !important; }
 html, body { height: 100%; }
@@ -34,9 +38,19 @@ button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.top { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.top { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; background: var(--brand); color: var(--brand-ink); padding: 9px 14px; border-radius: 10px; }
+.top .mark { width: 26px; height: 26px; flex: none; color: var(--gold); align-self: center; }
+.top .ver { color: var(--brand-muted); }
+.top .btn.ghost { color: var(--brand-muted); }
+.top .btn.ghost:hover { background: rgba(255,255,255,.1); color: #fff; }
+.top .btn:not(.ghost):not(.primary) { color: var(--ink); }
+.top .btn.primary { background: var(--gold); border-color: var(--gold); color: #0a3837; font-weight: 600; }
+.top .top-sep { background: rgba(255,255,255,.25); }
+.top #dname { color: var(--brand-ink); }
+.top #dname:hover, .top #dname:focus { color: var(--ink); }
+.top :focus-visible { outline-color: var(--gold); }
 .brand { display: flex; align-items: baseline; gap: 12px; min-width: 0; flex: 1 1 260px; }
-h1 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 0; letter-spacing: .02em; white-space: nowrap; }
+h1 { font-family: var(--display); font-weight: 600; font-size: 22px; margin: 0; letter-spacing: .01em; white-space: nowrap; }
 #dname { border: 1px solid transparent; background: transparent; padding: 4px 6px; border-radius: 4px; min-width: 0; flex: 1; max-width: 320px; font-size: 14px; }
 #dname:hover, #dname:focus { border-color: var(--rule); background: var(--panel); }
 .top-actions { display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: center; }
@@ -174,7 +188,7 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 .sechead .chev { color: var(--muted); align-self: center; }
 .sechead .chev svg { width: 17px; height: 17px; }
 .sechead .chev { width: 22px; height: 22px; }
-.sechead .st { font-family: 'Marcellus', serif; font-size: 16px; flex: 1; }
+.sechead .st { font-family: var(--display); font-weight: 500; font-size: 16px; flex: 1; }
 .sechead .sc { font-size: 12px; color: var(--muted); }
 .secbody { display: grid; gap: 6px; padding: 4px 0 6px; }
 .card.draft { border-color: var(--accent); border-style: solid; box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
@@ -257,7 +271,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v129</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v130</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
