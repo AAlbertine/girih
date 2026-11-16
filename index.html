@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v125">
+<meta name="generator" content="girih-workbench v126">
 <meta name="author" content="April Albertine">
 <meta name="copyright" content="© 2026 April Albertine">
 <meta name="description" content="Design Islamic geometric patterns step by step, by compass and straightedge.">
@@ -256,7 +256,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v125</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v126</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
@@ -2833,7 +2833,10 @@ async function openDesigns() {
     // draw the previews one at a time so the list appears right away
     const lis = [...s.querySelectorAll('li[data-id], li[data-ex]')];
     s.querySelectorAll('li[data-ex]').forEach(li => { const x = examples.find(e => e.id === li.dataset.ex);
-      li.querySelector('[data-exopen]').onclick = () => guardUnsaved('open an example', () => { loadDoc(JSON.parse(x.data), null); dirtySinceSave = false; closeSheet(); toast('Opened a copy of “' + x.name + '”. Press Save to keep it in My designs.'); }); });
+      li.querySelector('[data-exopen]').onclick = () => guardUnsaved('open an example', () => { loadDoc(JSON.parse(x.data), null); dirtySinceSave = false;
+        // examples open as finished pictures: scaffolding, points, labels, tile outline and arrows off (View and the Scaffolding eye turn them back on)
+        ui.scaffold = false; ui.dots = false; ui.cell = false; ui.vectors = false; for (const k in ui.lab) ui.lab[k] = false; saveUi(); syncViewBoxes(); renderNav(); draw();
+        closeSheet(); toast('Opened a copy of “' + x.name + '”. Press Save to keep it in My designs.'); }); });
     (function next(i) {
       if (i >= lis.length || !lis[i].isConnected) return;
       const it = lis[i].dataset.ex ? examples.find(x => x.id === lis[i].dataset.ex) : list.find(x => x.id === lis[i].dataset.id), key = it.id + ':' + it.updatedAt, box = lis[i].querySelector('.thumb');
