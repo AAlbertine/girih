@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v128">
+<meta name="generator" content="girih-workbench v129">
 <meta name="author" content="April Albertine">
 <meta name="copyright" content="© 2026 April Albertine">
 <meta name="description" content="Design Islamic geometric patterns step by step, by compass and straightedge.">
@@ -42,6 +42,7 @@ h1 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 0; 
 .top-actions { display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: center; }
 .grp-file, .grp-this { display: flex; gap: 6px; flex-wrap: wrap; }
 .top-sep { width: 1px; align-self: stretch; min-height: 28px; background: var(--rule); margin: 0 6px; }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
 .btn.ghost:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
 .btn { appearance: none; border: 1px solid var(--rule); background: var(--panel); border-radius: 6px; padding: 7px 12px; font-weight: 500; min-height: 36px; }
@@ -256,11 +257,12 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v128</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v129</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
         <button class="btn ghost" id="designsBtn">My designs</button>
+        <a class="btn ghost" id="guideBtn" href="https://aalbertine.github.io/girih/guide.html" target="_blank" rel="noopener" title="Open the user’s guide in a new tab">Guide</a>
       </div>
       <span class="top-sep" aria-hidden="true"></span>
       <div class="grp-this" role="group" aria-label="This design">
@@ -2205,7 +2207,7 @@ function selectOpts(noFoot) {
   if (el.type !== 'fill') {
     const lm = el.label || 'auto', kindName = { line: 'line labels', sseg: 'segment labels', seg: 'pattern line labels', circle: 'circle labels', star: 'star line labels', divide: 'point labels', onpt: 'point labels' }[tkey];
     h += `<div class="opt-text">Show only its label text${el.type === 'divide' ? ' (P1, P2, …)' : el.type === 'star' ? 's' : ''}</div>${el.hidden ? `<p class="opt-text">The label is hidden too while the ${what} is hidden. Uncheck <b>Hide this ${what}</b> to show it again.</p>` : ''}<div class="row">${[['auto', 'Automatic'], ['show', 'Always show'], ['hide', 'Always hide']].map(([v, l]) => `<button class="chip" data-lab="${v}" aria-pressed="${lm === v}">${l}</button>`).join('')}</div>
-      <p class="opt-text">Automatic follows the ${kindName} setting under Style.</p>`;
+      <p class="opt-text">Automatic follows the ${kindName} setting under View.</p>`;
   }
   if (tkey === 'sseg') h += `<div class="opt-text">Kind</div><div class="row"><button class="btn small" id="eToLine">Make it a full line</button></div>`;
   if (tkey === 'line') h += `<div class="opt-text">Kind</div><div class="row"><button class="btn small" id="eToSeg">Make it a segment between its two points</button></div>`;
@@ -2708,6 +2710,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 
 // cloud storage (db)
 const STANDALONE = true; // true in the copy hosted outside Claude
+if (STANDALONE) document.getElementById('guideBtn').href = 'guide.html';
 let db = null, uid = null, storeReady = null, userNs = null;
 // Outside Claude, designs are kept in this browser (IndexedDB), behind the same few calls the Claude database offers
 let localStore = false;

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="April Albertine">
+<meta name="description" content="How to use Girih Workbench to design Islamic geometric patterns with compass-and-straightedge steps.">
+<title>Girih Workbench: User’s Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #f4f6f8; --panel: #ffffff; --ink: #16212c; --muted: #5a6876; --rule: #d3dae0; --accent: #1c5d8c; --chip: #eef2f5;
+  --display: "Marcellus", "Trajan Pro", Georgia, serif; --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0e141b; --panel: #151d26; --ink: #e3e9ef; --muted: #96a3b1; --rule: #26313d; --accent: #6aa8d8; --chip: #1b2530; color-scheme: dark; } }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); }
+.wrap { max-width: 820px; margin: 0 auto; padding: 28px 18px 64px; }
+header.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 8px; }
+h1 { font: 400 34px/1.15 var(--display); margin: 0; }
+h2 { font: 400 25px/1.2 var(--display); margin: 44px 0 10px; padding-top: 14px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
+h3 { font-size: 17px; font-weight: 600; margin: 22px 0 4px; }
+p { margin: 8px 0; }
+a { color: var(--accent); }
+.lede { color: var(--muted); font-size: 18px; margin: 6px 0 18px; }
+.open { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: 500; font-size: 15px; }
+@media (prefers-color-scheme: dark) { .open { color: #0e141b; } }
+nav.toc { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; }
+nav.toc b { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+nav.toc ol { margin: 8px 0 0; padding-left: 22px; columns: 2; column-gap: 28px; }
+nav.toc li { break-inside: avoid; }
+@media (max-width: 560px) { nav.toc ol { columns: 1; } h1 { font-size: 28px; } }
+ul, ol { padding-left: 24px; margin: 8px 0; }
+li { margin: 4px 0; }
+figure { margin: 18px 0; }
+figure img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); border-radius: 8px; }
+figcaption { color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+kbd { font: 500 13.5px var(--body); background: var(--chip); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+.ui { font-weight: 600; white-space: nowrap; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 16px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td:first-child { white-space: nowrap; font-weight: 600; }
+.tip { background: var(--panel); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 14px 0; }
+footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 14.5px; }
+@media print { body { background: #fff; } .open, nav.toc { display: none; } h2 { break-after: avoid; } figure { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <h1>Girih Workbench: User’s Guide</h1>
+  <a class="open" href="./">Open the workbench</a>
+</header>
+<p class="lede">Girih Workbench lets you design Islamic geometric patterns the traditional way: one compass-and-straightedge step at a time. You build a scaffolding of circles and lines, draw the pattern on top of it, repeat it across the page, and color it.</p>
+
+<nav class="toc" aria-label="Contents">
+  <b>Contents</b>
+  <ol>
+    <li><a href="#screen">The screen</a></li>
+    <li><a href="#first">Your first pattern</a></li>
+    <li><a href="#tools">The drawing tools</a></li>
+    <li><a href="#symmetry">Symmetry</a></li>
+    <li><a href="#steps">Working with steps</a></li>
+    <li><a href="#tiling">Tiling: repeating the design</a></li>
+    <li><a href="#fills">Fills: coloring regions</a></li>
+    <li><a href="#style">Style</a></li>
+    <li><a href="#view">View</a></li>
+    <li><a href="#saving">Saving and My designs</a></li>
+    <li><a href="#export">Export</a></li>
+    <li><a href="#keys">Shortcuts and tips</a></li>
+  </ol>
+</nav>
+
+<h2 id="screen">1. The screen</h2>
+<figure><img src="guide/screen.jpg" alt="The workbench with a design open" width="1800" height="1140" loading="lazy">
+<figcaption>Tools on the left, the drawing in the middle, the construction steps on the right.</figcaption></figure>
+<ul>
+  <li><b>Top bar.</b> The design’s name (click it to rename), then <span class="ui">New</span>, <span class="ui">My designs</span> and <span class="ui">Guide</span>. The buttons on the right act on the design you have open: <span class="ui">Undo</span>, <span class="ui">Redo</span>, <span class="ui">Style</span>, <span class="ui">View</span>, <span class="ui">Export</span>, <span class="ui">Save as…</span> and <span class="ui">Save</span>.</li>
+  <li><b>Tools</b> (left). Select, Line, Segment, Circle, Point, Pattern, Fill and Erase.</li>
+  <li><b>Drawing</b> (middle). The <span class="ui">+</span>, <span class="ui">−</span> and <span class="ui">Fit</span> buttons zoom. You can also zoom with the scroll wheel or by pinching, and drag the drawing to move around. The bar underneath always tells you what to tap next.</li>
+  <li><b>Construction steps</b> (right). Every step you make is listed here in four groups: Scaffolding, Pattern Lines, Tiling and Fills.</li>
+</ul>
+<h3>O, U and the unit length</h3>
+<p>Every design starts with two points: the center <b>O</b> and the unit point <b>U</b>. The distance from O to U is the unit length that everything else is built from. With the Select tool you can drag U to resize or turn the whole design.</p>
+
+<h2 id="first">2. Your first pattern</h2>
+<ol>
+  <li>Click <span class="ui">New</span> and choose <span class="ui">Circle in a square</span>. You get a circle around O with a square drawn around it.</li>
+  <li>Open <span class="ui">View</span> and turn on <span class="ui">Show points</span> so you can see where lines and circles cross.</li>
+  <li>Choose the <span class="ui">Line</span> tool. Tap two points to draw a line through them. Notice that the line is repeated around the center: that is the symmetry at work.</li>
+  <li>A new step appears on the right as a draft. Adjust it if you like, then click <span class="ui">Save</span> (or press <kbd>Enter</kbd>). Drawing the next thing also saves it.</li>
+  <li>Add a few more lines and circles until you have crossings where you want the pattern to go.</li>
+  <li>Choose the <span class="ui">Pattern</span> tool and tap from point to point to draw the pattern lines. Tap the last point again to stop.</li>
+  <li>Click the eye next to <span class="ui">Scaffolding</span> to hide the construction and see the pattern on its own.</li>
+  <li>Choose <span class="ui">Fill</span>, pick a color, and tap inside the regions to color them.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<div class="tip">Not sure where to begin? Open <span class="ui">My designs</span> and try one of the <b>Example designs</b>. Step through it with the arrows in the steps panel to see how it was built.</div>
+
+<h2 id="tools">3. The drawing tools</h2>
+<p>All drawing is done by tapping points. Points snap, so you don’t need to be exact. Tapping anywhere along a line or circle makes a new point at that spot.</p>
+<table>
+  <tr><th>Tool</th><th>What it does</th></tr>
+  <tr><td>Select</td><td>Tap a line, circle, point or colored region to open its step. Tap an empty region between pattern lines to start a new fill. Drag U to resize or turn the design.</td></tr>
+  <tr><td>Line</td><td>A straight line through two points, extended across the page. Lines are scaffolding.</td></tr>
+  <tr><td>Segment</td><td>A straight line that stops at its two end points. Segments are scaffolding. A segment can be changed into a full line later, from its step.</td></tr>
+  <tr><td>Circle</td><td>Two ways to set the compass. <b>Through a point:</b> tap the center, then a point on the circle. <b>Copy a length:</b> tap two points to set the compass width, then tap the center.</td></tr>
+  <tr><td>Point</td><td>A point you place freely on a line or circle. It gets a letter (A, B, …), and you can drag it along the object it sits on.</td></tr>
+  <tr><td>Pattern</td><td>The finished design. Tap from point to point; tap the last point again, or click <span class="ui">Finish this line</span>, to stop. Pattern lines are drawn as bands and close off the regions you can fill.</td></tr>
+  <tr><td>Fill</td><td>Pick a color, then tap inside a region to color it.</td></tr>
+  <tr><td>Erase</td><td>Tap something to remove the step that made it, along with all its symmetric copies.</td></tr>
+</table>
+<h3>Changing your mind mid-line</h3>
+<p>If you’ve tapped the first point of a line and want to cancel, click <span class="ui">Cancel</span> in the bar under the drawing, press <kbd>Backspace</kbd> or <kbd>Esc</kbd>, or right-click the drawing.</p>
+
+<h2 id="symmetry">4. Symmetry</h2>
+<p>Islamic patterns repeat around a center, so you only draw one slice and the workbench repeats it for you.</p>
+<ul>
+  <li><b>Symmetry for what you draw next</b> appears in the steps panel when you start a new step. Choose the number of slices (None, 2, 3, 4, 5, 6, 8, 10, 12 or 16) and whether to add <span class="ui">Mirror reflections</span>.</li>
+  <li><b>Each step keeps its own symmetry.</b> Open a step and change <span class="ui">Symmetry of this step</span> at any time. A 12-fold design can still have 4-fold or 6-fold steps in it.</li>
+  <li><b>The drawing slice.</b> With <span class="ui">Shade the drawing slice</span> on (in View), the slice you are working in is lightly tinted.</li>
+  <li><b>Mirror lines.</b> When a step uses mirror reflections, purple dash-dot lines show where the mirrors are. The two that border the drawing slice are bolder.</li>
+</ul>
+<figure><img src="guide/step.jpg" alt="A pattern-line step open for editing" width="1800" height="1140" loading="lazy">
+<figcaption>An open step: its instructions, a picture, the points it uses, and its symmetry. The shaded slice and the purple mirror lines show on the drawing.</figcaption></figure>
+
+<h2 id="steps">5. Working with steps</h2>
+<p>The panel on the right lists the whole construction. Click a group’s heading to open or close it; <span class="ui">Show all</span> and <span class="ui">Fold</span> open and close every group.</p>
+<ul>
+  <li><b>Open a step</b> by clicking it in the list or by tapping its object in the drawing with the Select tool. The step shows its written instructions and a small picture, with the points it uses marked A, B and C.</li>
+  <li><b>Change a step.</b> Use the <span class="ui">Change</span> buttons to pick different points, change its symmetry, or rename its label. Steps built on it update automatically.</li>
+  <li><b>Move between steps</b> with the ◀ and ▶ arrows. <span class="ui">Close</span> closes the step.</li>
+  <li><b>Hide a step</b> with its eye icon. A hidden step isn’t drawn, and its points and crossings no longer snap. Click the eye again to bring it back.</li>
+  <li><b>Delete a step</b> with its trash can. <span class="ui">Undo</span> brings it back.</li>
+  <li><b>Delete several at once.</b> Hold <kbd>Shift</kbd> and click the steps you want, then delete them together.</li>
+  <li><b>Whole groups.</b> Each group heading has its own eye (show or hide everything in the group) and trash can (delete everything in the group, after a warning).</li>
+</ul>
+<p>If you delete or change a step that later steps depend on, the workbench tells you how many steps now need fixing.</p>
+
+<h2 id="tiling">6. Tiling: repeating the design</h2>
+<p>Tiling slides copies of your design across the page to make a continuous pattern.</p>
+<ol>
+  <li>Open the <span class="ui">Tiling</span> group and click <span class="ui">Pick the repeat directions</span>.</li>
+  <li>Tap two points for the first direction, then two points for the second, for example from one star center to the next. The points you can use are shown in orange: they are the ends and crossings of your pattern lines.</li>
+  <li>Use <span class="ui">Copies in each direction</span> to choose how far the pattern spreads.</li>
+</ol>
+<ul>
+  <li>The eye on the Tiling heading turns the repeats on and off.</li>
+  <li><span class="ui">Go to the original tile</span> brings the view back to the tile you drew.</li>
+  <li><span class="ui">Clear the directions</span> removes the tiling.</li>
+  <li>In <span class="ui">View</span>, <span class="ui">Outline the original tile</span> and <span class="ui">Show the repeat-direction arrows</span> show how the tiling is set up.</li>
+</ul>
+
+<h2 id="fills">7. Fills: coloring regions</h2>
+<ul>
+  <li>Choose the <span class="ui">Fill</span> tool, pick one of the numbered colors, and tap inside a region.</li>
+  <li>The fill follows the step’s symmetry, so matching regions around the center are colored together.</li>
+  <li><b>Regions are bounded by</b> lets you choose whether only pattern lines, or all lines, form the edges of a region.</li>
+  <li>Tapping a region that is already colored opens its fill step, where you can change the color or the symmetry.</li>
+  <li>After you save a fill, the Fill tool stays ready for the next one.</li>
+</ul>
+<p>The numbered colors come from the palette you choose under Style, so changing the palette recolors the whole design.</p>
+
+<h2 id="style">8. Style</h2>
+<p><span class="ui">Style</span> opens a side panel for the look of the finished drawing. The drawing stays visible so you can watch it change.</p>
+<figure><img src="guide/style.jpg" alt="The Style panel beside a finished design" width="1800" height="1140" loading="lazy">
+<figcaption>Style settings apply to the whole design.</figcaption></figure>
+<ul>
+  <li><b>Colors.</b> Choose a built-in palette, click <span class="ui">Shuffle</span> to move the colors around, or click <span class="ui">Edit</span> to change colors, add or remove one, and save your own palette.</li>
+  <li><b>Background</b> and <b>Bands.</b> Leave these on Automatic, or choose any color from the palette.</li>
+  <li><b>Band width</b> sets how thick the pattern lines are drawn.</li>
+  <li><b>Outline the bands</b> and <b>Outline color</b> add a thin edge to the bands.</li>
+  <li><b>Interlace the bands</b> weaves the bands over and under each other where they cross.</li>
+</ul>
+
+<h2 id="view">9. View</h2>
+<p><span class="ui">View</span> controls what you see while you work. These settings don’t change the design itself.</p>
+<ul>
+  <li><span class="ui">Show scaffolding</span> and <span class="ui">Show points</span></li>
+  <li><span class="ui">Shade the drawing slice</span> and <span class="ui">Show mirror lines</span></li>
+  <li><span class="ui">Show the repeat-direction arrows</span> and <span class="ui">Outline the original tile</span></li>
+  <li><b>Labels</b> for points, lines, segments, circles and pattern lines. To show or hide a single object’s label, open its step and use its Label setting.</li>
+</ul>
+
+<h2 id="saving">10. Saving and My designs</h2>
+<figure><img src="guide/designs.jpg" alt="The My designs window" width="1800" height="1140" loading="lazy">
+<figcaption>My designs lists what you’ve saved, with the example designs underneath.</figcaption></figure>
+<ul>
+  <li><span class="ui">Save</span> saves the open design. <span class="ui">Save as…</span> saves it as a new design under a new name.</li>
+  <li><span class="ui">My designs</span> lists your saved designs. Each one can be opened, opened as a copy, renamed or deleted.</li>
+  <li><b>Where designs are kept.</b> Your designs are saved in your browser, on the device you are using. They are not sent anywhere, and nobody else can see them. They won’t appear on another device or in another browser, and clearing your browser’s site data removes them.</li>
+  <li><b>Save to file</b> and <b>Open file</b> (at the top of My designs) save a design as a small file on your device and open it again. Use them for backups, to move a design to another device, or to send a design to someone.</li>
+  <li><b>Example designs</b> open as your own copy. Change them freely; the examples themselves stay as they are.</li>
+</ul>
+<p>If you start a new design or open another one with unsaved changes, the workbench asks first.</p>
+
+<h2 id="export">11. Export</h2>
+<table>
+  <tr><th>Export</th><th>What you get</th></tr>
+  <tr><td>SVG image</td><td>A picture that stays sharp at any size and opens in design apps.</td></tr>
+  <tr><td>PNG image</td><td>A picture at 2,000, 4,000 or 8,000 pixels on its long side.</td></tr>
+  <tr><td>Illustrated steps</td><td>The whole construction with a picture for every step, as a PDF or a web page. Good for printing and teaching.</td></tr>
+  <tr><td>Construction steps</td><td>The written steps as plain text, with point names.</td></tr>
+  <tr><td>Design file</td><td>Everything, to open in the workbench again later.</td></tr>
+</table>
+<p>Images show what is on screen at that moment, so zoom and pan to frame the picture first. Tick <span class="ui">Include the scaffolding lines</span> if you want the construction in the image.</p>
+
+<h2 id="keys">12. Shortcuts and tips</h2>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Z</kbd></td><td>Undo</td></tr>
+  <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>Redo (also <kbd>Ctrl</kbd> + <kbd>Y</kbd>)</td></tr>
+  <tr><td><kbd>Enter</kbd></td><td>Save the step you just drew</td></tr>
+  <tr><td><kbd>Backspace</kbd> or <kbd>Esc</kbd></td><td>Cancel a line you’ve started</td></tr>
+  <tr><td><kbd>Shift</kbd> + click</td><td>Select several steps in the list</td></tr>
+</table>
+<ul>
+  <li><b>Build the scaffolding first.</b> Pattern lines can only go from point to point, so make the crossings you need before you draw the pattern.</li>
+  <li><b>Hide what you’re done with.</b> Hiding finished scaffolding steps keeps the drawing clear and stops their points from getting in the way.</li>
+  <li><b>Check the result often.</b> Click the Scaffolding eye to flip between the construction and the finished pattern.</li>
+  <li><b>Phones and tablets.</b> Everything works by touch: tap instead of click, pinch to zoom, and drag to move around. Style and View open from the bottom of the screen.</li>
+</ul>
+
+<footer>© 2026 April Albertine · <a href="./">Open the workbench</a></footer>
+</div>
+</body>
+</html>
