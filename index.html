@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v126">
+<meta name="generator" content="girih-workbench v127">
 <meta name="author" content="April Albertine">
 <meta name="copyright" content="© 2026 April Albertine">
 <meta name="description" content="Design Islamic geometric patterns step by step, by compass and straightedge.">
@@ -256,7 +256,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v126</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v127</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
@@ -355,7 +355,6 @@ optgroup { font-weight: 600; }
           <label class="check"><input type="checkbox" id="lLines"> Lines</label>
           <label class="check"><input type="checkbox" id="lSegs"> Segments</label>
           <label class="check"><input type="checkbox" id="lCircles"> Circles</label>
-          <label class="check"><input type="checkbox" id="lStars"> Star lines</label>
           <label class="check"><input type="checkbox" id="lPattern"> Pattern lines</label>
         </div>
         <p class="opt-text">To show or hide one object’s label, select it and use its Label setting.</p>
@@ -2573,7 +2572,7 @@ $('bandW').onchange = () => { lsSet('gw-doc', { doc, savedId }); };
 $('outline').onchange = e => commit(d => { d.style.outline = e.target.checked; });
 $('outSlot').onchange = e => commit(d => { d.style.outSlot = +e.target.value; });
 function saveUi() { lsSet('gw-ui', { showPattern: ui.showPattern, showFills: ui.showFills, scaffold: ui.scaffold, dots: ui.dots, slice: ui.slice, mirrors: ui.mirrors, vectors: ui.vectors, cell: ui.cell, lab: ui.lab }); }
-const LAB_BOXES = [['lPoints', 'points'], ['lLines', 'lines'], ['lSegs', 'segments'], ['lCircles', 'circles'], ['lStars', 'stars'], ['lPattern', 'pattern']];
+const LAB_BOXES = [['lPoints', 'points'], ['lLines', 'lines'], ['lSegs', 'segments'], ['lCircles', 'circles'], ['lPattern', 'pattern']];
 function setScaffold(on) { ui.scaffold = on; saveUi(); syncViewBoxes(); if (tool === 'tile') renderOpts(); renderNav(); draw(); }
 $('scafBtn').onclick = () => setScaffold(!ui.scaffold);
 function syncScafBtn() { const b = $('scafBtn'); if (!b) return; b.setAttribute('aria-pressed', ui.scaffold ? 'true' : 'false'); b.querySelector('.state').textContent = ui.scaffold ? 'On' : 'Off'; }
