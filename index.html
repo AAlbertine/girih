@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v130">
+<meta name="generator" content="girih-workbench v131">
 <meta name="author" content="April Albertine">
 <meta name="theme-color" content="#0f4a48">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -271,7 +271,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v130</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v131</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
@@ -1672,7 +1672,7 @@ const HINTS = {
   select: () => editPick != null ? `Tap the new point for <b>${slotNames(byId(selId))[editPick]}</b>. Only points made before this step can be used, or tap anywhere on an earlier line or circle for a new point.` : (selId != null ? 'Change the step in the panel, or tap something else to edit it.' : 'Tap a line, circle, point set or colored region to edit its step. Drag U to resize or turn the whole design.'),
   segment: () => (pending.length ? 'Tap the other end of the segment.' : 'Tap two points to draw the segment between them.') + ' Tapping anywhere on a line or circle makes a new point there.',
   line: () => (pending.length ? 'Tap a second point for the line.' : 'Tap two points to draw a line through them.') + ' Tapping anywhere on a line or circle makes a new point there.',
-  point: () => 'Tap anywhere on a line or circle to put a point there. Drag a point you’ve placed to slide it along.',
+  point: () => 'Tap anywhere on a line or circle to put a point there. Near a crossing, it snaps onto the crossing. Drag a point you’ve placed to slide it along.',
   circle: () => ui.circleMode === 'through' ? (pending.length ? 'Tap a point the circle passes through.' : 'Tap the center of the circle.') + ' Tapping anywhere on a line or circle makes a new point there.'
     : ['Tap the first point of the length to copy.', 'Tap the second point of the length.', 'Tap the center of the new circle.'][pending.length],
   divide: () => pending.length ? `Tap the starting point on the circle. It will be divided into <b>${ui.n}</b> equal parts.` : 'Tap the center of the circle to divide.',
@@ -2096,13 +2096,24 @@ function actOnPoint(d, cu, w) {
   const i = d.ctr.lab++, name = LABEL_NAMES[i % 10] + (i >= 10 ? (Math.floor(i / 10) + 1) : '');
   d.els.push({ id: nid(d), type: 'onpt', on, t, p: pointOnCurve(d, tf, on, t), name, layer: 'scaffold' });
 }
+// where the Point tool would put a point: on the line or circle under the pointer, pulled onto a crossing when one is close by
+function pointSpot(sx, sy, ptype) {
+  const R = ptype === 'mouse' ? 10 : 20, hit = curveAt(sx, sy, R), V = vw();
+  const onCurve = (cu, q) => (cu.kind === 'circle' ? Math.abs(dist(q, cu.c) - cu.r) : (() => { const d = sub(cu.b, cu.a), L = dot(d, d); const t = L ? Math.max(0, Math.min(1, dot(sub(q, cu.a), d) / L)) : 0; return dist(q, addv(cu.a, mulv(d, t))); })()) < 1e-6;
+  const usable = cu => !(cu.layer === 'scaffold' && !ui.scaffold) && cu.layer !== 'pattern' && !cu.nosnap && !cu.hid;
+  for (const c of candidatesAt(sx, sy, ptype === 'mouse' ? 13 : 24)) { // nearest crossing or marked point first
+    const cu = hit && onCurve(hit.cu, c.p) ? hit.cu : getGeo().curves.find(k => usable(k) && onCurve(k, c.p));
+    if (cu) return { cu, p: c.p.slice(), snapped: true };
+  }
+  return hit;
+}
 function doPointTap(sx, sy, ptype) {
-  const hit = curveAt(sx, sy, ptype === 'mouse' ? 10 : 20);
+  const hit = pointSpot(sx, sy, ptype);
   if (!hit) { toast('Tap on a line or circle to put a point on it.'); return; }
   commit(d => actOnPoint(d, hit.cu, hit.p));
   const el = byId(lastNew[0]);
   makeDraft();
-  toast(`Marked point ${el.name} on ${curveLabel(el.on)}. Drag it to slide it along.`);
+  toast(hit.snapped ? `Marked point ${el.name} on a crossing of ${curveLabel(el.on)}. Drag it to slide it along.` : `Marked point ${el.name} on ${curveLabel(el.on)}. Drag it to slide it along.`);
 }
 // sliding a point along its object
 function onptNear(sx, sy, ptype) {
@@ -2636,7 +2647,7 @@ function dragU(w) {
 cv.addEventListener('pointermove', e => {
   const p = ptrs.get(e.pointerId);
   if (!p) { // hover
-    if (e.pointerType === 'mouse' && tool === 'point') { const h = curveAt(e.offsetX, e.offsetY, 10); hoverOn = h ? h.p : null; hoverCand = null; showSnap(); draw(); }
+    if (e.pointerType === 'mouse' && tool === 'point') { const h = pointSpot(e.offsetX, e.offsetY, 'mouse'); hoverOn = h ? h.p : null; hoverCand = null; showSnap(); draw(); }
     else if (e.pointerType === 'mouse' && (tool !== 'select' || editPick != null) && tool !== 'fill' && tool !== 'erase' && !loupeState) {
       const c = candidatesAt(e.offsetX, e.offsetY, 13);
       hoverCand = c[0] || null;
