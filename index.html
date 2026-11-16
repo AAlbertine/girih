@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v127">
+<meta name="generator" content="girih-workbench v128">
 <meta name="author" content="April Albertine">
 <meta name="copyright" content="© 2026 April Albertine">
 <meta name="description" content="Design Islamic geometric patterns step by step, by compass and straightedge.">
@@ -256,7 +256,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v127</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><h1>Girih Workbench <span class="ver" title="App version">v128</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
@@ -2996,6 +2996,82 @@ ol.steps{list-style:none;padding:0;display:grid;grid-template-columns:repeat(aut
 <h1>${esc2(doc.name)}</h1><p class="k">Gray: already drawn. Dashed: draw this now. Circled letters (A, B, C): the points to use in that step. The letters start over at every step.</p>
 <ol class="steps">${body}</ol></body></html>`;
 }
+// The illustrated steps as a PDF, written here directly (US Letter, three cards across) so it needs no outside library
+async function stepsPDF() {
+  const items = [{ text: START_TEXT, id: null }].concat(stepTexts({ withTiling: true }));
+  const W = 612, H = 792, M = 40, GAP = 12, COLS = 3, cw = (W - 2 * M - GAP * (COLS - 1)) / COLS, PAD = 8, PIC = cw - 2 * PAD, FS = 9.5, LH = 12.5;
+  const mc = document.createElement('canvas').getContext('2d');
+  const wid = (t, size, bold) => { mc.font = `${bold ? 'bold ' : ''}${size}px Helvetica, Arial, sans-serif`; return mc.measureText(t).width * 1.03; };
+  const wrap = (t, size, maxw, first) => { // greedy wrap; the first line may start indented
+    const out = []; let line = '', room = maxw - (first || 0);
+    for (const w of String(t).split(/\s+/).filter(Boolean)) {
+      const tryl = line ? line + ' ' + w : w;
+      if (wid(tryl, size) <= room || !line) line = tryl; else { out.push(line); line = w; room = maxw; }
+    }
+    if (line) out.push(line); return out;
+  };
+  const toJpeg = async url => { const im = new Image(); im.src = url; await im.decode(); const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0);
+    const b = atob(c.toDataURL('image/jpeg', 0.82).split(',')[1]), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return { u, w: c.width, h: c.height }; };
+  // cards: picture, then the numbered text, lettered details and any note
+  const cards = [];
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i], num = (i + 1) + '.', nw = wid(num + ' ', FS, true), tw = cw - 2 * PAD, lines = [];
+    wrap(it.text, FS, tw, nw).forEach((t, k) => lines.push({ t, x: k ? 0 : nw, num: k ? null : num }));
+    (it.detail || []).forEach((d, j) => wrap(d, FS, tw - 22).forEach((t, k) => lines.push({ t, x: 22, pre: k ? null : String.fromCharCode(97 + j) + ')' })));
+    if (it.warn) wrap('Note: ' + it.warn, 8.5, tw).forEach(t => lines.push({ t, x: 0, warn: true }));
+    const img = it.tiling || it.broken ? null : await toJpeg(stepPic(it.id ?? null, 420));
+    cards.push({ img, lines, h: PAD + (img ? PIC + 8 : 0) + lines.length * LH + PAD - 2 });
+  }
+  // WinAnsi text as hex strings
+  const CP = { '€': 128, '…': 133, '‘': 145, '’': 146, '“': 147, '”': 148, '•': 149, '–': 150, '—': 151, '′': 39, '″': 34, '−': 45, '→': 62 };
+  const hex = t => '<' + [...String(t)].map(ch => { const c = ch.charCodeAt(0), b = c < 256 && !(c >= 128 && c < 160) ? c : (CP[ch] || 63); return b.toString(16).padStart(2, '0'); }).join('') + '>';
+  const f = v => (Math.round(v * 100) / 100).toString();
+  const text = (t, x, y, size, font, gray) => `BT /${font} ${f(size)} Tf ${gray} ${f(x)} ${f(H - y)} Td ${hex(t)} Tj ET\n`;
+  // lay the cards out in rows, starting a new page when a row doesn't fit
+  const pages = [], imgs = []; let ops = '', y = M;
+  ops += text(doc.name || 'Untitled design', M, y + 18, 20, 'F1', '0.07 g'); y += 30;
+  wrap('Gray: already drawn. Dashed: draw this now. Circled letters (A, B, C): the points to use in that step. The letters start over at every step.', 9.5, W - 2 * M).forEach(t => { ops += text(t, M, y + 9, 9.5, 'F1', '0.35 g'); y += 12.5; });
+  y += 8;
+  for (let r = 0; r < cards.length; r += COLS) {
+    const row = cards.slice(r, r + COLS), rh = Math.max(...row.map(c => c.h));
+    if (y + rh > H - M - 14 && y > M + 1) { pages.push(ops); ops = ''; y = M; }
+    row.forEach((c, k) => {
+      const x = M + k * (cw + GAP);
+      ops += `0.82 G 0.6 w ${f(x)} ${f(H - y - rh)} ${f(cw)} ${f(rh)} re S\n`;
+      let ty = y + PAD;
+      if (c.img) { imgs.push(c.img); ops += `q ${f(PIC)} 0 0 ${f(PIC)} ${f(x + PAD)} ${f(H - ty - PIC)} cm /Im${imgs.length} Do Q\n`; ty += PIC + 8; }
+      for (const L of c.lines) {
+        ty += LH; const base = ty - 3.5;
+        if (L.num) ops += text(L.num, x + PAD, base, FS, 'F2', '0.07 g');
+        if (L.pre) ops += text(L.pre, x + PAD + 8, base, FS, 'F1', '0.07 g');
+        ops += text(L.t, x + PAD + L.x, base, L.warn ? 8.5 : FS, 'F1', L.warn ? '0.54 0.29 0 rg' : '0.07 g');
+      }
+    });
+    y += rh + GAP;
+  }
+  pages.push(ops);
+  // assemble the file
+  const chunks = [], offs = []; let pos = 0;
+  const lat = t => { const u = new Uint8Array(t.length); for (let i = 0; i < t.length; i++) u[i] = t.charCodeAt(i) & 255; return u; };
+  const put = u => { chunks.push(u); pos += u.length; };
+  const obj = (n, head, stream) => { offs[n] = pos; put(lat(`${n} 0 obj\n${head}\n`)); if (stream) { put(lat('stream\n')); put(stream); put(lat('\nendstream\n')); } put(lat('endobj\n')); };
+  const nImg = imgs.length, firstImg = 5, firstPage = firstImg + nImg, total = firstPage + pages.length * 2;
+  put(lat('%PDF-1.4\n%âãÏÓ\n'));
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, `<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, i) => (firstPage + i * 2 + 1) + ' 0 R').join(' ')}] >>`);
+  obj(3, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+  obj(4, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+  imgs.forEach((im, i) => obj(firstImg + i, `<< /Type /XObject /Subtype /Image /Width ${im.w} /Height ${im.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.u.length} >>`, im.u));
+  const xo = imgs.map((_, i) => `/Im${i + 1} ${firstImg + i} 0 R`).join(' ');
+  pages.forEach((p, i) => {
+    const foot = text(`${i + 1} / ${pages.length}`, W / 2 - 10, H - 22, 8.5, 'F1', '0.5 g'), body = lat(p + foot), c = firstPage + i * 2;
+    obj(c, `<< /Length ${body.length} >>`, body);
+    obj(c + 1, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Contents ${c} 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << ${xo} >> >> >>`);
+  });
+  const xref = pos;
+  put(lat(`xref\n0 ${total}\n0000000000 65535 f \n` + Array.from({ length: total - 1 }, (_, i) => String(offs[i + 1]).padStart(10, '0') + ' 00000 n \n').join('') + `trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`));
+  return new Blob(chunks, { type: 'application/pdf' });
+}
 function stepsText() {
   const lines = [doc.name, '', 'Construction steps', ''];
   [{ text: START_TEXT_NAMED }].concat(stepTexts({ withTiling: true, named: true })).forEach((it, i) => {
@@ -3011,7 +3087,7 @@ $('exportBtn').onclick = () => openSheet(`<h3>Export <button class="btn small" d
   <ul class="list">
    <li><div class="t"><b>SVG image</b><small>Sharp at any size; opens in design apps</small></div><button class="btn small" id="exSvg">Save .svg</button></li>
    <li><div class="t"><b>PNG image</b><small>Size of the long side: <select class="sel" id="exPngSize" aria-label="PNG size"><option value="2000">2,000 px</option><option value="4000" selected>4,000 px (sharp for printing)</option><option value="8000">8,000 px (poster)</option></select></small></div><button class="btn small" id="exPng">Save .png</button></li>
-   <li><div class="t"><b>Illustrated steps</b><small>A picture for every step, ready to print</small></div><button class="btn small" id="exHtml">Save .html</button></li>
+   <li><div class="t"><b>Illustrated steps</b><small>A picture for every step, ready to print</small></div><span class="row"><button class="btn small" id="exPdf">Save .pdf</button><button class="btn small" id="exHtml">Save .html</button></span></li>
    <li><div class="t"><b>Construction steps</b><small>The written steps as plain text, with point names</small></div><button class="btn small" id="exTxt">Save .txt</button></li>
    <li><div class="t"><b>Design file</b><small>Everything, to open here again later</small></div><button class="btn small" id="exJson">Save .json</button></li>
    <li><div class="t"><b>Open a design file</b><small>A .json saved from here</small></div><label class="btn small" for="imFile">Choose file</label><input type="file" id="imFile" accept=".json,application/json" hidden></li>
@@ -3020,6 +3096,7 @@ $('exportBtn').onclick = () => openSheet(`<h3>Export <button class="btn small" d
   const scaf = () => $('exScaf').checked;
   $('exSvg').onclick = () => save(fileBase() + '.svg', toSVG(scaf()));
   $('exHtml').onclick = () => save(fileBase() + '-steps.html', stepsHTML());
+  $('exPdf').onclick = async () => { const b = $('exPdf'); b.disabled = true; b.textContent = 'Making…'; try { await save(fileBase() + '-steps.pdf', await stepsPDF()); } catch (e) { toast('The PDF couldn’t be made. Try the .html version.'); } b.disabled = false; b.textContent = 'Save .pdf'; };
   $('exPng').onclick = async () => {
     const want = +$('exPngSize').value, r = await toPNG(scaf(), want);
     if (!r) { toast('The image couldn’t be made at that size. Try a smaller size.'); return; }
