@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v133">
+<meta name="generator" content="girih-workbench v134">
 <meta name="author" content="April Albertine">
 <meta name="theme-color" content="#0f4a48">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -271,7 +271,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v133</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v134</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
@@ -846,14 +846,26 @@ function freshDoc(name) {
   };
 }
 const nid = d => ++d.ctr.id;
-// a sketch handed over by the Hankin Sketchpad in the page address: f = framework sides, p = pattern lines, four numbers per segment
+// A sketch handed over by the Hankin Sketchpad: f = polygon sides, r = the rays from the middle of each side (start, end),
+// p = pattern lines as [ray, end, ray, end]. Sides and rays become scaffolding; each pattern line joins two ray ends,
+// so the pattern is drawn only where there is scaffolding. (Older links had no rays: p is then plain segments.)
 function sketchDoc(s) {
   const ok = a => Array.isArray(a) && a.length % 4 === 0 && a.length <= 16000 && a.every(Number.isFinite);
-  if (!s || !ok(s.f) || !ok(s.p) || !(s.f.length + s.p.length)) return null;
-  const ang = Number.isFinite(s.a) ? s.a : null, d = freshDoc('Hankin sketch' + (ang != null ? ' ' + ang + '°' : ''));
-  d.sym = { n: 1, mirror: false }; d.tile.on = false; d.ctr.G = 0; addBasics(d);
-  for (let i = 0; i < s.f.length; i += 4) { const name = 'G' + (++d.ctr.G); d.els.push({ id: nid(d), type: 'seg', a: [s.f[i], s.f[i + 1]], b: [s.f[i + 2], s.f[i + 3]], name, layer: 'scaffold', sym: { n: 1, mirror: false }, step: { text: `Draw side ${name} of the polygon framework.` } }); }
-  for (let i = 0; i < s.p.length; i += 4) { const name = 'S' + (++d.ctr.S); d.els.push({ id: nid(d), type: 'seg', a: [s.p[i], s.p[i + 1]], b: [s.p[i + 2], s.p[i + 3]], name, layer: 'pattern', sym: { n: 1, mirror: false }, step: { text: `Draw segment ${name} of the pattern (polygons in contact${ang != null ? ', contact angle ' + ang + '°' : ''}).` } }); }
+  if (!s || !ok(s.f) || !ok(s.p) || (s.r && !ok(s.r)) || !(s.f.length + s.p.length)) return null;
+  const ang = Number.isFinite(s.a) ? s.a : null, d = freshDoc('Hankin sketch' + (ang != null ? ' ' + ang + '°' : '')), one = () => ({ n: 1, mirror: false });
+  d.sym = one(); d.tile.on = false; d.ctr.G = 0; addBasics(d);
+  const scaf = (q, i, text) => { const name = 'G' + (++d.ctr.G), el = { id: nid(d), type: 'seg', a: [q[i], q[i + 1]], b: [q[i + 2], q[i + 3]], name, layer: 'scaffold', sym: one(), step: { text: text(name) } }; d.els.push(el); return el; };
+  for (let i = 0; i < s.f.length; i += 4) scaf(s.f, i, n => `Draw side ${n} of the polygon framework.`);
+  if (!s.r) {
+    for (let i = 0; i < s.p.length; i += 4) { const name = 'S' + (++d.ctr.S); d.els.push({ id: nid(d), type: 'seg', a: [s.p[i], s.p[i + 1]], b: [s.p[i + 2], s.p[i + 3]], name, layer: 'pattern', sym: one(), step: { text: `Draw segment ${name} of the pattern (polygons in contact${ang != null ? ', contact angle ' + ang + '°' : ''}).` } }); }
+    return d;
+  }
+  const rays = []; for (let i = 0; i < s.r.length; i += 4) rays.push(scaf(s.r, i, n => `Draw ${n} from the middle of a side, at ${ang != null ? ang + '°' : 'the contact angle'} to that side, until it meets the line from a neighbouring side.`));
+  const end = (ri, e) => { const el = rays[ri]; if (!el || (e !== 0 && e !== 1)) return null; return { p: (e ? el.b : el.a).slice(), ref: { k: 'pt', id: el.id, part: e, img: 0 } }; };
+  for (let i = 0; i < s.p.length; i += 4) {
+    const a = end(s.p[i], s.p[i + 1]), b = end(s.p[i + 2], s.p[i + 3]); if (!a || !b || dist(a.p, b.p) < 1e-9) continue;
+    d.els.push({ id: nid(d), type: 'seg', refs: refsOf(d, [a, b]), a: a.p, b: b.p, name: 'S' + (++d.ctr.S), layer: 'pattern', sym: one() });
+  }
   return d;
 }
 function addBasics(d) {
@@ -2967,7 +2979,7 @@ function openFromFile() {
   inp.onchange = () => {
     const f = inp.files[0]; if (!f) return;
     const r = new FileReader();
-    r.onload = () => guardUnsaved('open another design', () => { try { const d = JSON.parse(r.result); if (!d || !Array.isArray(d.els) || !d.sym) throw 0; loadDoc(d, null); dirtySinceSave = false; closeSheet(); toast('Opened “' + (d.name || 'design') + '”.'); } catch (err) { toast('That file isn’t a design saved from here.'); } });
+    r.onload = () => guardUnsaved('open another design', () => { try { let d = JSON.parse(r.result); if (d && d.hankinSketch) d = sketchDoc(d); if (!d || !Array.isArray(d.els) || !d.sym) throw 0; loadDoc(d, null); dirtySinceSave = false; closeSheet(); toast('Opened “' + (d.name || 'design') + '”.'); } catch (err) { toast('That file isn’t a design saved from here.'); } });
     r.readAsText(f);
   };
   inp.click();
@@ -3155,7 +3167,7 @@ $('exportBtn').onclick = () => openSheet(`<h3>Export <button class="btn small" d
   $('imFile').onchange = e => {
     const f = e.target.files[0]; if (!f) return;
     const r = new FileReader();
-    r.onload = () => { try { const d = JSON.parse(r.result); if (!d || !Array.isArray(d.els) || !d.sym) throw 0; loadDoc(d, null); closeSheet(); toast('Opened “' + d.name + '”.'); } catch (err) { toast('That file isn’t a design saved from here.'); } };
+    r.onload = () => { try { let d = JSON.parse(r.result); if (d && d.hankinSketch) d = sketchDoc(d); if (!d || !Array.isArray(d.els) || !d.sym) throw 0; loadDoc(d, null); closeSheet(); toast('Opened “' + d.name + '”.'); } catch (err) { toast('That file isn’t a design saved from here.'); } };
     r.readAsText(f);
   };
 });
