@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="generator" content="girih-workbench v132">
+<meta name="generator" content="girih-workbench v133">
 <meta name="author" content="April Albertine">
 <meta name="theme-color" content="#0f4a48">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -271,7 +271,7 @@ optgroup { font-weight: 600; }
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v132</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
+    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><g stroke-width="4.5"><circle cx="71" cy="50" r="21"/><circle cx="64.8" cy="64.8" r="21"/><circle cx="50" cy="71" r="21"/><circle cx="35.2" cy="64.8" r="21"/><circle cx="29" cy="50" r="21"/><circle cx="35.2" cy="35.2" r="21"/><circle cx="50" cy="29" r="21"/><circle cx="64.8" cy="35.2" r="21"/></g></svg><h1>Girih Workbench <span class="ver" title="App version">v133</span></h1><input id="dname" aria-label="Design name" value="Untitled design"></div>
     <div class="top-actions">
       <div class="grp-file" role="group" aria-label="Designs">
         <button class="btn ghost" id="newBtn">New</button>
@@ -846,6 +846,16 @@ function freshDoc(name) {
   };
 }
 const nid = d => ++d.ctr.id;
+// a sketch handed over by the Hankin Sketchpad in the page address: f = framework sides, p = pattern lines, four numbers per segment
+function sketchDoc(s) {
+  const ok = a => Array.isArray(a) && a.length % 4 === 0 && a.length <= 16000 && a.every(Number.isFinite);
+  if (!s || !ok(s.f) || !ok(s.p) || !(s.f.length + s.p.length)) return null;
+  const ang = Number.isFinite(s.a) ? s.a : null, d = freshDoc('Hankin sketch' + (ang != null ? ' ' + ang + '°' : ''));
+  d.sym = { n: 1, mirror: false }; d.tile.on = false; d.ctr.G = 0; addBasics(d);
+  for (let i = 0; i < s.f.length; i += 4) { const name = 'G' + (++d.ctr.G); d.els.push({ id: nid(d), type: 'seg', a: [s.f[i], s.f[i + 1]], b: [s.f[i + 2], s.f[i + 3]], name, layer: 'scaffold', sym: { n: 1, mirror: false }, step: { text: `Draw side ${name} of the polygon framework.` } }); }
+  for (let i = 0; i < s.p.length; i += 4) { const name = 'S' + (++d.ctr.S); d.els.push({ id: nid(d), type: 'seg', a: [s.p[i], s.p[i + 1]], b: [s.p[i + 2], s.p[i + 3]], name, layer: 'pattern', sym: { n: 1, mirror: false }, step: { text: `Draw segment ${name} of the pattern (polygons in contact${ang != null ? ', contact angle ' + ang + '°' : ''}).` } }); }
+  return d;
+}
 function addBasics(d) {
   d.els.push({ id: nid(d), type: 'point', p: [0, 0], name: 'O' }, { id: nid(d), type: 'point', p: [1, 0], name: 'U' });
 }
@@ -3172,6 +3182,13 @@ function loadDoc(d, id, fresh) {
   new ResizeObserver(() => drawNow()).observe(cv);
   myPalettes = lsGet('gw-palettes') || [];
   storeReady = initStore();
+  { const m = /^#sketch=([\w-]+)/.exec(location.hash);
+    if (m) {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+      let d = null; try { d = sketchDoc(JSON.parse(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')))); } catch (e) {}
+      if (!d) toast('That sketch link couldn’t be read.');
+      else { if (doc.els.some(e => e.type !== 'point')) dirtySinceSave = true; guardUnsaved('open the sketch from the Hankin Sketchpad', () => { loadDoc(d, null); toast('Opened your sketch from the Hankin Sketchpad.'); }); }
+    } }
   storeReady.then(async ok => {
     if (!ok) return;
     try {
